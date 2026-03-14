@@ -32,25 +32,21 @@ export class FleetManager {
 
     addDevice(device: Device): void {
 
-        if(this.userManager.isDuplicateId(device.user_id) == false){
-            throw new Error("Cannot add device: User with id nonexistent not found");
-        }
-
-        this.deviceManager.addDevice(device);
-        // when we add a device, we need to make sure it has a valid user_id
+        // // when we add a device, we need to make sure it has a valid user_id
         let user = this.userManager.getUser(device.user_id);
 
-        if(user == null)
-        {
-            return
+        if(user == null){
+            throw new Error('Cannot add device: User with id nonexistent not found')
         }
-
-        this.deviceManager.addDevice(device)
-
+        else {
+            this.deviceManager.addDevice(device)
+        }
+        
     }
 
     removeDevice(id: string): void {
         return this.deviceManager.removeDevice(id);
+
     }
 
     getDevice(id: string): Device | null {
