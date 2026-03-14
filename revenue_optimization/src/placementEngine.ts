@@ -83,11 +83,8 @@ export class PlacementEngine {
         allSched.forEach((areaSchedule) => {
             for (let i = 0; i < areaSchedule.length; i++) {
                 let ad1 = areaSchedule[i];
-                for (let j = i + 1; j < areaSchedule.length; j++) {
-                    let ad2 = areaSchedule[j];
-                    if (ad1.endTime > ad2.startTime || ad1.startTime > ad2.endTime)
+                    if (ad1.endTime > startTime || ad1.startTime > ad.duration+startTime+ad.timeout)
                         return false
-                }
             }
         });
 
