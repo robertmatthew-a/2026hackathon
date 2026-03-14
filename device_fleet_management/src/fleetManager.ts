@@ -38,6 +38,15 @@ export class FleetManager {
 
         this.deviceManager.addDevice(device);
         // when we add a device, we need to make sure it has a valid user_id
+        let user = this.userManager.getUser(device.user_id);
+
+        if(user == null)
+        {
+            return
+        }
+
+        this.deviceManager.addDevice(device)
+
     }
 
     removeDevice(id: string): void {
