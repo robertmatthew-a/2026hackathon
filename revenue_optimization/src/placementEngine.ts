@@ -78,16 +78,18 @@ export class PlacementEngine {
         // check if ad alr sched
         if (this.isAdAlreadyScheduled(ad.adId, schedule)) return false;
 
-
-        let allSched = Object.values(schedule);
-        allSched.forEach((areaSchedule) => {
-            for (let i = 0; i < areaSchedule.length; i++) {
+        let areaSchedule = schedule[area.areaId] || null;
+        
+          if(areaSchedule != null){
+              for (let i = 0; i < areaSchedule.length; i++) {
                 let ad1 = areaSchedule[i];
-                    if (ad1.endTime > startTime || ad1.startTime > ad.duration+startTime+ad.timeout)
+
+                    let endTime = startTime + ad.duration;
+                    if((startTime > ad1.startTime && startTime < ad1.endTime )|| (endTime > ad1.startTime && endTime < ad1.endTime))
                         return false
             }
-        });
-
+          }
+        
         return true;
     }
 
