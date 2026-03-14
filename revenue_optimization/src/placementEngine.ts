@@ -31,11 +31,22 @@ export class PlacementEngine {
     }
 
     isAdCompatibleWithArea(ad: Ad, area: Area): boolean {
-        return false;
+        for (let i = 0; i < ad.bannedLocations.length; i++) {
+            if (ad.bannedLocations[i] === area.location) {
+                return false;
+            }
+        }
+        return true;
     }
 
     getTotalScheduledTimeForArea(areaSchedule: ScheduledAd[]): number {
-        return 0;
+        let total = 0;
+
+        areaSchedule.forEach(sched => {
+            total += sched.endTime - sched.startTime
+        });
+
+        return total;
     }
 
     doesPlacementFitTimingConstraints(
@@ -43,11 +54,15 @@ export class PlacementEngine {
         area: Area,
         startTime: number
     ): boolean {
-        return false;
+
+        return ad.duration + startTime <= area.timeWindow && startTime >= ad.timeReceived && startTime <= ad.timeReceived + ad.timeout;
+
     }
 
     isAdAlreadyScheduled(adId: string, schedule: Schedule): boolean {
-        return false;
+        return Object.values(schedule).some(areaSchedule =>
+            areaSchedule.some(ad => ad.adId === adId)
+        );
     }
 
     canScheduleAd(
@@ -56,10 +71,54 @@ export class PlacementEngine {
         schedule: Schedule,
         startTime: number
     ): boolean {
-        return false;
+        // check ad compat with area
+        if (!this.isAdCompatibleWithArea(ad, area)) return false;
+        // check if placement fit time constraint
+        if (!this.doesPlacementFitTimingConstraints(ad, area, startTime)) return false;
+        // check if ad alr sched
+        if (this.isAdAlreadyScheduled(ad.adId, schedule)) return false;
+
+
+        let allSched = Object.values(schedule);
+        allSched.forEach((areaSchedule) => {
+            for (let i = 0; i < areaSchedule.length; i++) {
+                let ad1 = areaSchedule[i];
+                for (let j = i + 1; j < areaSchedule.length; j++) {
+                    let ad2 = areaSchedule[j];
+                    if (ad1.endTime > ad2.startTime || ad1.startTime > ad2.endTime)
+                        return false
+                }
+            }
+        });
+
+        return true;
     }
 
     isAreaScheduleValid(area: Area, areaSchedule: ScheduledAd[], ads: Ad[]): boolean {
-        return false;
+        // overlap check
+
+        for (let i = 0; i < areaSchedule.length; i++) {
+            let ad1 = areaSchedule[i];
+            for (let j = i + 1; j < areaSchedule.length; j++) {
+                let ad2 = areaSchedule[j];
+
+                if (ad1.endTime > ad2.startTime || ad1.startTime > ad2.endTime)
+                    return false
+            }
+
+            // check if ad exists in ads list
+
+            let curr_ad = ads.find((listAd) => listAd.adId == ad1.adId)
+            if (!curr_ad) return false;
+
+            // check if ad fits area's time window
+            if (!this.doesPlacementFitTimingConstraints(curr_ad, area, ad1.startTime)) return false;
+        }
+
+        ads.forEach((ad) => {
+            if (ad.bannedLocations.find((a_id) => a_id == area.areaId)) return false;
+        })
+
+        return true;
     }
 }
