@@ -8,76 +8,76 @@ export interface User {
 
 export class UserManager {
 
-  private users: User[] = [];
+    private users: User[] = [];
 
     addUser(user: User): void {
-      this.users.push(user);
+        
+        if (this.isDuplicateId(user.id)) {
+            throw new Error('User with id ' + user.id + ' already exists');
+        }
+
+        if (user.id == null || user.id === '') {
+          throw new Error('User must have an id');
+        }
+        else {     
+            this.users.push(user);
+        }
     }
 
     removeUser(id: string): void {
 
-      let foundUserIndex = 0;
-      for(let i = 0; i < this.users.length; i++)
-      {
-        if(this.users[i].id === id)
-        {
-          foundUserIndex = i;
-          break
+        let foundUserIndex = -1;
+        for (let i = 0; i < this.users.length; i++) {
+            if (this.users[i].id === id) {
+                foundUserIndex = i;
+                break
+            }
+            
         }
-      }
 
-      if(this.users.length > 0)
-        this.users.splice(foundUserIndex, 1);
+        if(foundUserIndex == -1){
+            throw new Error('User with id ' + id + ' not found');
+        }
+        else {
+             if (this.users.length > 0)
+                this.users.splice(foundUserIndex, 1);
+        }
+
+       
     }
 
     getUser(id: string): User | null {
-      for(let i = 0; i < this.users.length; i++)
-      {
-        if(this.users[i].id === id)
-        {
-          return this.users[i]
+        for (let i = 0; i < this.users.length; i++) {
+            if (this.users[i].id === id) {
+                return this.users[i]
+            }
         }
-      }
-      return null;
+        return null;
     }
 
     getUsersByEmail(email: string): User[] | null {
-      
-      let foundUsers: User[] = []
 
-      for(let i = 0; i < this.users.length; i++)
-      {
-        if(this.users[i].email === email)
-        {
-          foundUsers.push(this.users[i])
+        let foundUsers: User[] = []
+
+        for (let i = 0; i < this.users.length; i++) {
+            if (this.users[i].email === email) {
+                foundUsers.push(this.users[i])
+            }
         }
-      }
 
-      if(foundUsers.length > 0)
-      {
-        return foundUsers
-      }
-      
-      return null;
+        return foundUsers;
     }
 
     getUsersByPhone(phone: string): User[] | null {
-      let foundUsers: User[] = []
+        let foundUsers: User[] = []
 
-      for(let i = 0; i < this.users.length; i++)
-      {
-        if(this.users[i].phone === phone)
-        {
-          foundUsers.push(this.users[i])
+        for (let i = 0; i < this.users.length; i++) {
+            if (this.users[i].phone === phone) {
+                foundUsers.push(this.users[i])
+            }
         }
-      }
-      
-      if(foundUsers.length > 0)
-      {
-        return foundUsers
-      }
-      
-      return null;
+
+        return foundUsers;
     }
 
     getAllUsers(): User[] {
@@ -86,5 +86,16 @@ export class UserManager {
 
     getUserCount(): number {
         return this.users.length;
+    }
+
+    isDuplicateId(id: string): boolean {
+
+        for (let i = 0; i < this.users.length; i++) {
+            if (this.users[i].id === id) {
+                return true;
+            }
+        }
+        return false;
+
     }
 }
