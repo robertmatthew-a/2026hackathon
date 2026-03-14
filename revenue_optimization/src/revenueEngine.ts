@@ -12,7 +12,19 @@ export class RevenueEngine {
         ads: Ad[],
         schedule: Schedule
     ): number {
-        return 0;
+        let numAds = 0;
+
+        for(let i = 0; i < schedule.scheduledAd.length; i++){
+
+            for(let j = 0; j < ads.length; j++){
+                if(schedule.scheduleAd[i].adId === ads[i].adId && ads[i].advertiserId === advertiserId){
+                    numAds++;
+                }
+            }
+            
+        }
+
+        return numAds;
     }
 
     calculateDiminishedRevenue(
