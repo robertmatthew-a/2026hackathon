@@ -96,18 +96,25 @@ export class DeviceManager {
 		// the radius is in kilometers
 		let foundDevices: Device[] = []
 		for (let i = 0; i < this.devices.length; i++) {
-			let x = (longitude - this.devices[i].location.longitude)
-			x = x * x
+		
+			const R = 6371; // km
+			const dLat = (latitude - this.devices[i].location.latitude) * Math.PI / 180;
+			const dLon = (longitude - this.devices[i].location.longitude) * Math.PI / 180;
+			
+			const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+								Math.cos(this.devices[i].location.latitude* Math.PI / 180) * Math.cos(latitude * Math.PI / 180) *
+								Math.sin(dLon / 2) * Math.sin(dLon / 2);
+			
+			const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-			let y = (latitude - this.devices[i].location.latitude)
-			y = y * y
-
-			let distSq = x + y
-
-			if (distSq < radius_km * radius_km) {
+			const dist = R * c;
+			console.log("distance " + dist);
+			if (dist < radius_km) {
 				foundDevices.push(this.devices[i]);
 			}
+			
 		}
+
 		return foundDevices
 	}
 
@@ -121,15 +128,19 @@ export class DeviceManager {
 		for (let i = 0; i < this.devices.length; i++) {
 			if (this.devices[i].id == cDevice.id) continue;
 
-			let x = (cDevice.location.longitude - this.devices[i].location.longitude)
-			x = x * x
+			const R = 6371; // km
+			const dLat = (cDevice.location.latitude - this.devices[i].location.latitude) * Math.PI / 180;
+			const dLon = (cDevice.location.longitude - this.devices[i].location.longitude) * Math.PI / 180;
+			
+			const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+								Math.cos(this.devices[i].location.latitude* Math.PI / 180) * Math.cos(cDevice.location.latitude * Math.PI / 180) *
+								Math.sin(dLon / 2) * Math.sin(dLon / 2);
+			
+			const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-			let y = (cDevice.location.latitude - this.devices[i].location.latitude)
-			y = y * y
+			const dist = R * c;
 
-			let distSq = x + y
-
-			if (distSq < radius_km * radius_km) {
+			if (dist < radius_km * radius_km) {
 				foundDevices.push(this.devices[i]);
 			}
 		}
