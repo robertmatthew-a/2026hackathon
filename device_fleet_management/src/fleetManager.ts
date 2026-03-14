@@ -16,6 +16,14 @@ export class FleetManager {
 
     removeUser(id: string): void {
         //when we remove a user, we need to make sure all devices associated with the user are also removed
+
+        this.userManager.removeUser(id);
+        let devices: Device[] = this.deviceManager.getDevicesByUserId(id) || [];
+
+        for(let i = 0; i < devices.length; i++){
+            this.deviceManager.removeDevice(devices[i].id);
+        }
+
     }
 
     getUser(id: string): User | null {
@@ -23,6 +31,12 @@ export class FleetManager {
     }
 
     addDevice(device: Device): void {
+
+        if(this.userManager.isDuplicateId(device.user_id) == false){
+            throw new Error("Cannot add device: User with id nonexistent not found");
+        }
+
+        this.deviceManager.addDevice(device);
         // when we add a device, we need to make sure it has a valid user_id
     }
 
