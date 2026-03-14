@@ -101,23 +101,28 @@ export class PlacementEngine {
             for (let j = i + 1; j < areaSchedule.length; j++) {
                 let ad2 = areaSchedule[j];
 
-                if (ad1.endTime > ad2.startTime || ad1.startTime > ad2.endTime)
+                if ((ad2.startTime > ad1.startTime && ad2.startTime < ad1.endTime )|| (ad2.endTime > ad1.startTime && ad2.endTime < ad1.endTime))
                     return false
             }
 
             // check if ad exists in ads list
 
-            let curr_ad = ads.find((listAd) => listAd.adId == ad1.adId)
+            let curr_ad = ads.find((listAd) => listAd.adId === ad1.adId)
             if (!curr_ad) return false;
 
             // check if ad fits area's time window
             if (!this.doesPlacementFitTimingConstraints(curr_ad, area, ad1.startTime)) return false;
         }
+        
+        for(let i = 0; i < ads.length; i++){
 
-        ads.forEach((ad) => {
-            if (ad.bannedLocations.find((a_id) => a_id == area.areaId)) return false;
-        })
-
+            for(let j = 0; j < ads[i].bannedLocations.length; j++){
+                if(ads[i].bannedLocations[j] === area.location){
+                    return false;
+                }
+            }
+            
+        }
         return true;
     }
 }
