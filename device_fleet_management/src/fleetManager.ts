@@ -16,6 +16,15 @@ export class FleetManager {
 
     removeUser(id: string): void {
         //when we remove a user, we need to make sure all devices associated with the user are also removed
+        let userDevices = this.deviceManager.getDevicesByUserId(id);
+
+        if(userDevices != null)
+        {
+            userDevices.forEach(device => {
+                this.deviceManager.removeDevice(device.id)
+            });
+        }
+        this.userManager.removeUser(id);
     }
 
     getUser(id: string): User | null {
@@ -24,6 +33,15 @@ export class FleetManager {
 
     addDevice(device: Device): void {
         // when we add a device, we need to make sure it has a valid user_id
+        let user = this.userManager.getUser(device.user_id);
+
+        if(user == null)
+        {
+            return
+        }
+
+        this.deviceManager.addDevice(device)
+
     }
 
     removeDevice(id: string): void {
