@@ -108,7 +108,7 @@ export class DeviceManager {
 			const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
 			const dist = R * c;
-			console.log("distance " + dist);
+
 			if (dist < radius_km) {
 				foundDevices.push(this.devices[i]);
 			}
@@ -159,6 +159,7 @@ export class DeviceManager {
 
 		for (let i = 0; i < this.devices.length; i++) {
 			if (this.devices[i].id === id) {
+				console.log("device heree", this.devices[i].id);
 				return true;
 			}
 		}
